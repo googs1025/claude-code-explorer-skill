@@ -1,12 +1,26 @@
 #!/bin/bash
 # install.sh — 一键安装 code-explorer skill 到 Claude Code
 # 同时配置：Git Hooks（开发用）+ Claude Code Hooks（运行时增强）
+#
+# 推荐使用 Plugin 方式安装（自动更新、版本管理）：
+#   claude plugin add github:googs1025/claude-code-explorer-skill
+#
+# 本脚本为 Legacy 安装方式，适用于不支持 Plugin 的旧版本 Claude Code。
 
 set -e
 
 SKILL_DIR="$HOME/.claude/skills/code-explorer"
 HOOKS_DIR="$HOME/.claude/hooks/code-explorer"
 SETTINGS_FILE="$HOME/.claude/settings.json"
+
+# ── 0. Plugin 推荐提示 ─────────────────────────────────────────────────────
+echo ""
+echo "💡 推荐使用 Plugin 方式安装（自动更新 + 版本管理）："
+echo "   claude plugin add github:googs1025/claude-code-explorer-skill"
+echo ""
+echo "   如果你使用的是最新版 Claude Code，建议使用上述命令安装。"
+echo "   以下为 Legacy 安装方式，继续执行..."
+echo ""
 
 echo "🔍 安装 code-explorer skill..."
 
@@ -19,10 +33,14 @@ if [ -d "$SKILL_DIR" ]; then
 fi
 
 mkdir -p "$SKILL_DIR/lang" "$SKILL_DIR/scripts"
-cp SKILL.md "$SKILL_DIR/"
-cp lang/*.md "$SKILL_DIR/lang/"
-cp scripts/*.sh "$SKILL_DIR/scripts/"
+cp skills/code-explorer/SKILL.md "$SKILL_DIR/"
+cp skills/code-explorer/lang/*.md "$SKILL_DIR/lang/"
+cp skills/code-explorer/scripts/*.sh "$SKILL_DIR/scripts/"
 chmod +x "$SKILL_DIR/scripts/"*.sh
+
+# Legacy 安装需要将 ${CLAUDE_SKILL_DIR} 替换为实际路径
+sed -i.bak "s|\${CLAUDE_SKILL_DIR}|$SKILL_DIR|g" "$SKILL_DIR/SKILL.md"
+rm -f "$SKILL_DIR/SKILL.md.bak"
 
 echo "  ✅ Skill 安装完成：$SKILL_DIR"
 
@@ -49,10 +67,10 @@ echo ""
 echo "🪝 安装 Claude Code Hooks..."
 
 mkdir -p "$HOOKS_DIR"
-cp claude-hooks/post-bash.sh "$HOOKS_DIR/"
-cp claude-hooks/post-read.sh "$HOOKS_DIR/"
-cp claude-hooks/on-stop.sh   "$HOOKS_DIR/"
-cp claude-hooks/pre-prompt.sh "$HOOKS_DIR/"
+cp scripts/post-bash.sh "$HOOKS_DIR/"
+cp scripts/post-read.sh "$HOOKS_DIR/"
+cp scripts/on-stop.sh   "$HOOKS_DIR/"
+cp scripts/pre-prompt.sh "$HOOKS_DIR/"
 chmod +x "$HOOKS_DIR/"*.sh
 
 echo "  ✅ Hooks 复制至：$HOOKS_DIR"

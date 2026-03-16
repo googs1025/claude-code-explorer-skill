@@ -21,7 +21,7 @@ fi
 MARKER="/tmp/code-explorer-session-${SESSION_ID}"
 
 # detect_lang.sh：验证语言识别结果，创建会话标记
-if echo "$COMMAND" | grep -q "code-explorer/scripts/detect_lang"; then
+if echo "$COMMAND" | grep -q "detect_lang\.sh"; then
   touch "$MARKER"
   if echo "$STDOUT" | grep -q "^lang="; then
     LANG=$(echo "$STDOUT" | grep "^lang=" | cut -d= -f2)
@@ -32,13 +32,13 @@ if echo "$COMMAND" | grep -q "code-explorer/scripts/detect_lang"; then
 fi
 
 # find_entry.sh：记录入口点扫描完成
-if echo "$COMMAND" | grep -q "code-explorer/scripts/find_entry"; then
+if echo "$COMMAND" | grep -q "find_entry\.sh"; then
   ENTRY_COUNT=$(echo "$STDOUT" | grep -c "^\./")
   echo "[code-explorer] 入口点扫描完成，找到 $ENTRY_COUNT 个候选路径" >&2
 fi
 
 # git_context.sh：记录 git 上下文获取完成
-if echo "$COMMAND" | grep -q "code-explorer/scripts/git_context"; then
+if echo "$COMMAND" | grep -q "git_context\.sh"; then
   COMMIT_COUNT=$(echo "$STDOUT" | grep -c "^[a-f0-9]\{7\}")
   echo "[code-explorer] Git 上下文已加载（最近 $COMMIT_COUNT 条提交）" >&2
 fi

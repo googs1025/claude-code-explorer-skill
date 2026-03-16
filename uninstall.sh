@@ -1,5 +1,8 @@
 #!/bin/bash
 # uninstall.sh — 卸载 code-explorer skill，仅移除自身内容，不影响其他配置
+#
+# 如果你使用 Plugin 方式安装，请改用：
+#   claude plugin remove code-explorer
 
 set -e
 
@@ -7,7 +10,12 @@ SKILL_DIR="$HOME/.claude/skills/code-explorer"
 HOOKS_DIR="$HOME/.claude/hooks/code-explorer"
 SETTINGS_FILE="$HOME/.claude/settings.json"
 
-echo "🗑  卸载 code-explorer skill..."
+echo ""
+echo "💡 如果你使用 Plugin 方式安装，请改用："
+echo "   claude plugin remove code-explorer"
+echo ""
+
+echo "🗑  卸载 code-explorer skill（Legacy 方式）..."
 
 # ── 1. 移除 Skill 文件 ──────────────────────────────────────────────────────
 

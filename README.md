@@ -1,6 +1,6 @@
-# code-explorer — Claude Code 源码解读 Skill
+# code-explorer — Claude Code 源码解读 Plugin
 
-一个为 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 设计的源码探索 Skill，帮助你快速读懂陌生代码库。
+一个为 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 设计的源码探索插件，帮助你快速读懂陌生代码库。
 
 ## 功能特点
 
@@ -13,7 +13,17 @@
 
 ## 安装
 
-### 方式一：一键脚本（推荐）
+### 方式一：Plugin 安装（推荐）
+
+```bash
+claude plugin add github:googs1025/claude-code-explorer-skill
+```
+
+Plugin 方式支持自动更新和版本管理，一行命令即可完成安装。
+
+### 方式二：Legacy 脚本安装
+
+适用于不支持 Plugin 的旧版本 Claude Code：
 
 ```bash
 git clone https://github.com/googs1025/claude-code-explorer-skill.git
@@ -27,18 +37,12 @@ bash install.sh
 3. 安装 Claude Code Hooks 到 `~/.claude/hooks/code-explorer/`
 4. 注册 Hooks 到 `~/.claude/settings.json`
 
-### 方式二：手动安装
+### 本地开发测试
 
 ```bash
-# 安装 Skill 文件
-mkdir -p ~/.claude/skills/code-explorer/lang ~/.claude/skills/code-explorer/scripts
-cp SKILL.md ~/.claude/skills/code-explorer/
-cp lang/*.md ~/.claude/skills/code-explorer/lang/
-cp scripts/*.sh ~/.claude/skills/code-explorer/scripts/
-chmod +x ~/.claude/skills/code-explorer/scripts/*.sh
+# 以 Plugin 方式加载本地目录
+claude --plugin-dir ./
 ```
-
-> 手动安装不包含 Claude Code Hooks，如需 Hooks 功能请使用一键脚本。
 
 ## 使用方式
 
@@ -111,13 +115,13 @@ Skill 内置三个辅助脚本，分析时自动执行：
 
 | 脚本 | 功能 | 示例输出 |
 |------|------|---------|
-| `scripts/detect_lang.sh` | 检测项目语言、版本、框架 | `lang=go`, `framework=gin` |
-| `scripts/find_entry.sh <lang>` | 按语言查找入口点和路由注册 | `./cmd/server/main.go` |
-| `scripts/git_context.sh [file]` | 获取 Git 历史、活跃文件、贡献者 | 最近 20 条提交、Top 5 活跃文件 |
+| `detect_lang.sh` | 检测项目语言、版本、框架 | `lang=go`, `framework=gin` |
+| `find_entry.sh <lang>` | 按语言查找入口点和路由注册 | `./cmd/server/main.go` |
+| `git_context.sh [file]` | 获取 Git 历史、活跃文件、贡献者 | 最近 20 条提交、Top 5 活跃文件 |
 
 ## Claude Code Hooks
 
-安装脚本会自动配置以下 [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)，增强分析体验：
+插件自动配置以下 [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)，增强分析体验：
 
 | Hook | 触发时机 | 功能 |
 |------|---------|------|
@@ -168,29 +172,45 @@ on-stop.sh → 输出统计，清理临时文件
 
 ```
 claude-code-explorer-skill/
-├── SKILL.md                    # Claude Code Skill 主文件（分析流程与策略）
-├── install.sh                  # 一键安装脚本
-├── uninstall.sh                # 一键卸载脚本
-├── README.md                   # 项目说明
-├── lang/                       # 语言专项分析策略
-│   ├── go.md                   #   Go 专项策略
-│   ├── python.md               #   Python 专项策略
-│   └── javascript.md           #   JS/TS 专项策略
-├── scripts/                    # 辅助分析脚本
-│   ├── detect_lang.sh          #   语言检测
-│   ├── find_entry.sh           #   入口点查找
-│   └── git_context.sh          #   Git 上下文获取
-├── claude-hooks/               # Claude Code Hooks（运行时增强）
-│   ├── pre-prompt.sh           #   分析意图检测与配置注入
-│   ├── post-bash.sh            #   脚本输出验证与会话标记
-│   ├── post-read.sh            #   文件读取追踪
-│   └── on-stop.sh              #   会话统计与清理
-└── git-hooks/                  # Git Hooks（开发用）
-    ├── pre-commit              #   shellcheck 检查
-    └── commit-msg              #   Conventional Commits 验证
+├── .claude-plugin/
+│   ├── plugin.json                 # 插件清单（名称、版本、描述）
+│   └── marketplace.json            # 市场目录（仓库地址）
+├── skills/
+│   └── code-explorer/
+│       ├── SKILL.md                # Skill 主文件（分析流程与策略）
+│       ├── lang/                   # 语言专项分析策略
+│       │   ├── go.md
+│       │   ├── python.md
+│       │   └── javascript.md
+│       └── scripts/                # 辅助分析脚本
+│           ├── detect_lang.sh
+│           ├── find_entry.sh
+│           └── git_context.sh
+├── hooks/
+│   └── hooks.json                  # 声明式 Hook 配置
+├── scripts/                        # Hook 运行时脚本
+│   ├── pre-prompt.sh               # 分析意图检测与配置注入
+│   ├── post-bash.sh                # 脚本输出验证与会话标记
+│   ├── post-read.sh                # 文件读取追踪
+│   └── on-stop.sh                  # 会话统计与清理
+├── install.sh                      # Legacy 安装脚本
+├── uninstall.sh                    # Legacy 卸载脚本
+├── README.md                       # 项目说明
+├── CHANGELOG.md                    # 变更日志
+└── git-hooks/                      # Git Hooks（开发用）
+    ├── pre-commit
+    └── commit-msg
 ```
 
 ## 卸载
+
+### Plugin 方式
+
+```bash
+claude plugin remove code-explorer
+```
+
+### Legacy 方式
 
 ```bash
 cd claude-code-explorer-skill

@@ -40,13 +40,13 @@ allowed-tools:
 
 ```bash
 # 1. 检测编程语言
-bash ~/.claude/skills/code-explorer/scripts/detect_lang.sh
+bash ${CLAUDE_SKILL_DIR}/scripts/detect_lang.sh
 
 # 2. 查找入口点（将 <lang> 替换为上一步输出的语言）
-bash ~/.claude/skills/code-explorer/scripts/find_entry.sh <lang>
+bash ${CLAUDE_SKILL_DIR}/scripts/find_entry.sh <lang>
 
 # 3. 获取 Git 历史上下文（将 <target> 替换为用户关注的文件，可选）
-bash ~/.claude/skills/code-explorer/scripts/git_context.sh <target>
+bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 ```
 
 ---
@@ -55,9 +55,9 @@ bash ~/.claude/skills/code-explorer/scripts/git_context.sh <target>
 
 根据检测到的语言，读取对应策略文件：
 
-- Go → `Read ~/.claude/skills/code-explorer/lang/go.md`
-- Python → `Read ~/.claude/skills/code-explorer/lang/python.md`
-- JavaScript/TypeScript → `Read ~/.claude/skills/code-explorer/lang/javascript.md`
+- Go → `Read ${CLAUDE_SKILL_DIR}/lang/go.md`
+- Python → `Read ${CLAUDE_SKILL_DIR}/lang/python.md`
+- JavaScript/TypeScript → `Read ${CLAUDE_SKILL_DIR}/lang/javascript.md`
 - 其他语言 → 跳过，使用通用策略
 
 ---
