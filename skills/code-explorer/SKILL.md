@@ -17,6 +17,7 @@ allowed-tools:
   - Glob
   - Bash
   - Agent
+  - AskUserQuestion
 ---
 
 # 源码探索专家 (Code Explorer)
@@ -74,8 +75,11 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 3. **依赖文件**：Read `go.mod` / `package.json` / `requirements.txt`
 4. **架构推断**：根据目录名推断分层（MVC / DDD / 微服务 / 单体）
 
-> **深度模式专属**：Phase 1 完成后，输出扫描摘要，并询问：
-> "我准备重点分析 [X, Y, Z] 这几个模块，这是你关注的范围吗？要不要调整？"
+> **深度模式专属**：Phase 1 完成后，使用 `AskUserQuestion` 确认分析范围：
+> - question: "我扫描到以下模块，你想重点分析哪些？"
+> - options: 根据扫描结果动态生成模块选项（如 `api/`、`core/`、`db/`）
+> - multiSelect: true（允许选多个模块）
+> - 用户也可选「Other」自由指定范围
 
 **Subagent 加速（深度模式）**：当项目包含 3 个以上独立模块时，使用 `Agent(subagent_type="Explore")` **并行扫描**多个模块目录，每个 subagent 负责一个模块的结构和依赖分析。启用 subagent 时，**必须**在输出中注明 `[subagent]` 标记。
 
@@ -95,7 +99,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 **工具策略**：
 - 优先用 `Grep` 搜索，再用 `Read` 读取关键片段（用 offset/limit）
 - 先读函数签名和注释，按需才读实现体
-- 文件超过 10 个时，**告知用户并询问是否分步进行**
+- 文件超过 10 个时，使用 `AskUserQuestion` 让用户选择：「继续完整分析」/「分步进行（先分析前 N 个）」/「缩小范围」
 - **多路径并行**：当需要同时追踪 2 条以上独立调用链时，使用 `Agent(subagent_type="Explore")` 并行追踪，每个 subagent 负责一条路径，最后汇总结果
 
 ---
@@ -213,7 +217,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 
 - 用户指定的文件路径或函数名找不到：
   1. 用 `Glob` 搜索相似文件名，用 `Grep` 搜索相似函数名
-  2. 如果找到候选，列出并询问：「未找到 [目标]，你是否指的是以下之一？」
+  2. 如果找到候选，使用 `AskUserQuestion` 让用户选择：将候选列为 options，question 为「未找到 [目标]，你是否指的是以下之一？」
   3. 如果完全找不到，告知用户并建议检查路径拼写
 
 ### 通用原则
