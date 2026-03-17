@@ -53,6 +53,35 @@ go test ./... -coverprofile=coverage.out
 go tool cover -func=coverage.out | tail -1
 ```
 
+## 改进建议检测模式
+
+以下 Grep 模式用于**建议模式**下检测 Go 项目的常见改进点：
+
+### 🐛 代码质量
+- `Grep "if err != nil {\s*return err\s*}"` → 错误无上下文包装，建议用 `fmt.Errorf("...: %w", err)` 包装
+- `Grep "interface {"` + 方法数 > 5 → 接口过大，建议拆分为更小的接口（接口隔离原则）
+- `Grep "func \w+\("` + 参数数 > 5 → 函数参数过多，建议用结构体封装
+
+### 🔒 安全加固
+- `Grep "sql\.Query.*\+\|Sprintf.*sql"` → SQL 拼接注入风险，建议用参数化查询
+- `Grep "http\.ListenAndServe\("` → 无 TLS，建议用 `ListenAndServeTLS`
+- `Grep "os\.Getenv\("` → 环境变量未校验，建议增加默认值和类型检查
+
+### ⚡ 性能优化
+- `Grep "for .* range"` 嵌套 → O(n²) 风险，建议用 map 优化
+- `Grep "json\.Marshal\|json\.Unmarshal"` 在热路径 → 考虑 `easyjson`/`sonic`
+- `Grep "append("` 在循环中 → 建议预分配 slice 容量
+
+### 🧪 测试覆盖
+- `Glob "**/*_test.go"` → 检查核心包是否有对应测试文件
+- 缺少 `TestMain` → 建议增加测试初始化/清理
+- 缺少 table-driven tests → 建议对核心函数使用表驱动测试
+
+### 📝 文档与 DX
+- `Grep "^func [A-Z]"` 无 `//` 注释前缀 → 导出函数缺少 godoc 注释
+- 缺少 `Makefile` 或 `go generate` → 建议增加构建自动化
+- 缺少 `.golangci.yml` → 建议配置 golangci-lint
+
 ## 推荐 Mermaid 图类型
 
 - 包依赖关系 → `flowchart TD`

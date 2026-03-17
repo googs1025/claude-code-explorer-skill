@@ -51,6 +51,39 @@ grep -r "^from \." --include="*.py" . | grep -v ".venv" | head -20
 - 函数超过 50 行（职责不清）
 - `__init__` 中做复杂计算（延迟初始化）
 
+## 改进建议检测模式
+
+以下 Grep 模式用于**建议模式**下检测 Python 项目的常见改进点：
+
+### 🐛 代码质量
+- `Grep "except:"` → 裸异常捕获，建议指定具体异常类型
+- `Grep "def \w+\([^)]*\):"` 无类型注解 → 公开函数缺少类型注解，建议添加
+- `Grep "class \w+:"` 无 `dataclass`/`Pydantic` → 纯数据类可用 `@dataclass` 或 `BaseModel` 替代
+- `Grep "global "` → 全局变量使用，建议用类或闭包替代
+
+### 🔒 安全加固
+- `Grep "eval(\|exec("` → 代码注入风险，建议用 `ast.literal_eval` 或其他安全替代
+- `Grep "subprocess\.call\|os\.system"` + 字符串拼接 → 命令注入风险，建议用参数列表
+- `Grep "pickle\.load"` → 反序列化不受信数据风险，建议校验来源
+- `Grep "DEBUG\s*=\s*True"` → 生产环境调试模式未关闭
+
+### ⚡ 性能优化
+- `Grep "for .* in .*:"` 嵌套 → O(n²) 风险，建议用集合或字典优化
+- `Grep "requests\.\(get\|post\)"` → 同步 HTTP 调用，高并发建议用 `aiohttp`/`httpx`
+- `Grep "time\.sleep"` → 阻塞等待，建议用异步或事件驱动
+- `Grep "SELECT \*\|\.all()"` → ORM 全表查询，建议限制字段和分页
+
+### 🧪 测试覆盖
+- `Glob "**/test_*.py"` / `Glob "**/*_test.py"` → 检查核心模块是否有对应测试
+- 缺少 `conftest.py` → 建议增加共享 fixture
+- 缺少 `pytest.ini` / `pyproject.toml [tool.pytest]` → 建议统一测试配置
+
+### 📝 文档与 DX
+- `Grep "def \w+\("` 无 docstring（下一行非 `\"\"\"`）→ 公开函数缺少 docstring
+- `Grep "__all__"` 在 `__init__.py` 中缺失 → 建议定义 `__all__` 明确公开 API
+- 缺少 `py.typed` 标记文件 → 建议增加以支持类型检查
+- 缺少 `ruff.toml` / `.flake8` → 建议配置 linter
+
 ## 推荐 Mermaid 图类型
 
 - 类继承关系 → `classDiagram`

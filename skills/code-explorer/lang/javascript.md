@@ -65,6 +65,39 @@ grep '"strict"' tsconfig.json
 grep -r ": any\|as any" --include="*.ts" . | grep -v node_modules | wc -l
 ```
 
+## 改进建议检测模式
+
+以下 Grep 模式用于**建议模式**下检测 JS/TS 项目的常见改进点：
+
+### 🐛 代码质量
+- `Grep ": any\|as any"` → TypeScript `any` 类型滥用，建议用具体类型或 `unknown` 替代
+- `Grep "console\.log\|console\.debug"` → 调试日志残留，建议移除或用 logger 替代
+- `Grep "var "` → 使用 `var` 声明，建议改用 `const`/`let`
+- `Grep "== \| != "` + 非 `===`/`!==` → 宽松比较，建议用严格比较
+
+### 🔒 安全加固
+- `Grep "dangerouslySetInnerHTML"` → XSS 风险，建议用安全的渲染方式或 sanitize
+- `Grep "eval("` → 代码注入风险，建议移除
+- `Grep "localStorage\|sessionStorage"` + 敏感数据 → 建议用 httpOnly cookie 或加密
+- `Grep "cors.*origin.*\*\|Access-Control-Allow-Origin.*\*"` → CORS 过于宽松
+
+### ⚡ 性能优化
+- `Grep "useEffect\("` 无依赖数组或依赖过多 → 可能触发不必要的重渲染
+- `Grep "\.map(\|\.filter(\|\.reduce("` 链式调用 → 大数组可合并为单次遍历
+- `Grep "new Date()\|Date\.now()"` 在渲染函数中 → 建议提取到 memo/useMemo
+- `Grep "JSON\.parse\|JSON\.stringify"` 在热路径 → 大对象考虑流式处理
+
+### 🧪 测试覆盖
+- `Glob "**/*.test.{ts,tsx,js,jsx}"` / `Glob "**/*.spec.{ts,tsx,js,jsx}"` → 检查核心模块是否有测试
+- 缺少 `jest.config` / `vitest.config` → 建议配置测试框架
+- React 组件缺少 Error Boundary → 建议为关键 UI 区域增加错误边界
+
+### 📝 文档与 DX
+- 缺少 `.eslintrc` / `eslint.config` → 建议配置 ESLint
+- 缺少 `.prettierrc` → 建议配置 Prettier 统一代码风格
+- `Grep "// TODO\|// FIXME\|// HACK"` → 未完成的实现，建议跟踪解决
+- `tsconfig.json` 中 `"strict": false` 或缺失 → 建议开启 TypeScript 严格模式
+
 ## 推荐 Mermaid 图类型
 
 - 组件树 → `flowchart TD`
