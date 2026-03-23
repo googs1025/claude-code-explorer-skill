@@ -13,13 +13,22 @@ fi
 
 # ── 关键词检测：判断是否为深度分析请求 ───────────────────────────────────────
 DEEP_KEYWORDS="架构|整体|全项目|梳理|模块关系|整个|设计|overview|architecture|project"
-EXPLORE_KEYWORDS="解释|理解|追踪|流程|实现|怎么|如何|为什么|explain|trace|how|why|code-explorer"
+
+# EXPLORE 需要同时命中「动作词」+「代码上下文词」，或直接使用 /code-explorer 命令
+EXPLORE_ACTION="解释|理解|追踪|流程|实现|怎么|如何|为什么|explain|trace|how|why"
+EXPLORE_CONTEXT="代码|函数|模块|文件|项目|架构|类|接口|类型|代码库|codebase|class|function|module|file|code"
 
 IS_DEEP=0
 IS_EXPLORE=0
 
-echo "$PROMPT" | grep -qiE "$DEEP_KEYWORDS"    && IS_DEEP=1
-echo "$PROMPT" | grep -qiE "$EXPLORE_KEYWORDS" && IS_EXPLORE=1
+echo "$PROMPT" | grep -qiE "$DEEP_KEYWORDS" && IS_DEEP=1
+
+# code-explorer 命令直接触发；其他场景需要动作词+代码上下文词同时出现
+if echo "$PROMPT" | grep -qiE "code-explorer"; then
+  IS_EXPLORE=1
+elif echo "$PROMPT" | grep -qiE "$EXPLORE_ACTION" && echo "$PROMPT" | grep -qiE "$EXPLORE_CONTEXT"; then
+  IS_EXPLORE=1
+fi
 
 # 既不是深度也不是探索请求，直接退出（不注入任何内容）
 [ $IS_DEEP -eq 0 ] && [ $IS_EXPLORE -eq 0 ] && exit 0
