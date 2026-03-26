@@ -95,7 +95,7 @@ if [ "$HAS_TTY" -eq 1 ]; then
   case "$DETAIL_CHOICE" in
     1) DETAIL="简洁摘要（省略图表，输出要点）" ;;
     3) DETAIL="完整深度报告（含所有图表、Git 洞察、风险列表）" ;;
-    *) DETAIL="标准分析（含 Mermaid 图表）" ;;
+    *) DETAIL="标准分析（含 ASCII art 图表）" ;;
   esac
 
   echo "│" >&2
@@ -105,7 +105,7 @@ else
   # ── TTY 不可用：静默使用默认值 ─────────────────────────────────────────────
   SCOPE="全项目（所有模块）"
   FOCUS="整体架构与模块关系"
-  DETAIL="标准分析（含 Mermaid 图表）"
+  DETAIL="标准分析（含 ASCII art 图表）"
   echo "[code-explorer] TTY 不可用，使用默认配置（全项目/架构/标准分析）" >&2
 fi
 

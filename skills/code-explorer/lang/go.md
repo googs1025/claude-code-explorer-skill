@@ -82,9 +82,9 @@ go tool cover -func=coverage.out | tail -1
 - 缺少 `Makefile` 或 `go generate` → 建议增加构建自动化
 - 缺少 `.golangci.yml` → 建议配置 golangci-lint
 
-## 推荐 Mermaid 图类型
+## 推荐 ASCII art 图类型
 
-- 包依赖关系 → `flowchart TD`
-- 请求处理链 → `sequenceDiagram`
-- goroutine 生命周期 → `stateDiagram-v2`
-- 错误传播路径 → `flowchart LR`
+- 包依赖关系 → ASCII 垂直流程图（方框 + `-->` 箭头）
+- 请求处理链 → ASCII 时序图（竖线 + 箭头）
+- goroutine 生命周期 → ASCII 状态转换图（方框 + 带条件箭头）
+- 错误传播路径 → ASCII 水平流程图（方框 + `-->` 箭头）

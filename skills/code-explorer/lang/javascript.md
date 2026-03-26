@@ -98,9 +98,9 @@ grep -r ": any\|as any" --include="*.ts" . | grep -v node_modules | wc -l
 - `Grep "// TODO\|// FIXME\|// HACK"` → 未完成的实现，建议跟踪解决
 - `tsconfig.json` 中 `"strict": false` 或缺失 → 建议开启 TypeScript 严格模式
 
-## 推荐 Mermaid 图类型
+## 推荐 ASCII art 图类型
 
-- 组件树 → `flowchart TD`
-- API 请求流 → `sequenceDiagram`
-- 路由结构 → `flowchart LR`
-- Redux/Zustand 状态流 → `stateDiagram-v2`
+- 组件树 → 树形缩进图（`├──` / `└──` 连线）
+- API 请求流 → ASCII 时序图（竖线 + 箭头）
+- 路由结构 → ASCII 水平流程图（方框 + `-->` 箭头）
+- Redux/Zustand 状态流 → ASCII 状态转换图

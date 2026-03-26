@@ -84,8 +84,8 @@ grep -r "^from \." --include="*.py" . | grep -v ".venv" | head -20
 - 缺少 `py.typed` 标记文件 → 建议增加以支持类型检查
 - 缺少 `ruff.toml` / `.flake8` → 建议配置 linter
 
-## 推荐 Mermaid 图类型
+## 推荐 ASCII art 图类型
 
-- 类继承关系 → `classDiagram`
-- 请求/任务处理流 → `sequenceDiagram`
-- 状态机（状态模式）→ `stateDiagram-v2`
+- 类继承关系 → ASCII 树形图（缩进 + 连线表示继承层级）
+- 请求/任务处理流 → ASCII 时序图（竖线 + 箭头）
+- 状态机（状态模式）→ ASCII 状态转换图（方框 + 带条件箭头）

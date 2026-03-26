@@ -125,11 +125,11 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 ### Phase 3：抽象与可视化
 
 1. **伪代码重构**：将核心逻辑转化为步骤列表（5-10 步）
-2. **绘制图表**（根据场景选择，**必须包含至少一个**）：
-   - 架构/模块关系 → Mermaid `flowchart TD`
-   - 请求/调用时序 → Mermaid `sequenceDiagram`
-   - 状态转换 → Mermaid `stateDiagram-v2`
-   - 类继承关系 → Mermaid `classDiagram`
+2. **绘制图表**（根据场景选择，**必须包含至少一个**，使用 ASCII art 文字图）：
+   - 架构/模块关系 → 方框 + 箭头的 ASCII 流程图
+   - 请求/调用时序 → ASCII 时序图（竖线表示生命线，箭头表示调用）
+   - 状态转换 → ASCII 状态图（方框表示状态，箭头标注条件）
+   - 类继承关系 → ASCII 树形图（缩进 + 连线表示层级）
 3. **识别模式**：指出设计模式（单例、工厂、观察者、策略）或反模式
 
 ---
@@ -194,7 +194,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 [一句话，≤50 字]
 
 ## 🏗️ 架构/流程图
-[Mermaid 图表，必须包含]
+[ASCII art 文字图，必须包含]
 
 ## 🔍 关键逻辑拆解
 **入口点**: `文件路径:函数名`
@@ -259,7 +259,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 - **禁止**在快速/标准/深度模式中输出优化建议或功能建议，这些模式仅用于理解代码
 - **禁止**直接粘贴大段源代码，关键片段不超过 15 行
 - **禁止**无参数读取超过 200 行的文件，必须用 `offset` + `limit`
-- **必须**在标准/深度模式下使用 Mermaid 图表
+- **必须**在标准/深度模式下使用 ASCII art 文字图
 - **必须**在每个 Phase 完成后输出检查点摘要
 - 文件数量超过 10 个时，主动告知并询问是否分步
 - 累计读取超过 8 个文件时，主动建议用户执行 `/compact`
@@ -284,7 +284,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/git_context.sh <target>
 - **NEVER** 在深度模式下跳过 Phase 1 直接追踪——宏观不清时追踪调用路径等于在迷宫里乱跑，你会反复读到无关文件，浪费读取预算，最终被迫中断分析。
 - **NEVER** 同时打开超过 3 条独立调用链串行追踪——人脑和上下文窗口都无法同时保持 3 条以上的追踪状态，结果是每条都浅尝辄止。超过 2 条时必须用 subagent 并行处理。
 - **NEVER** 在没有 Grep 定位行号的情况下盲目 Read 文件——你不知道目标在第几行，可能读了 50 行全是 import 语句，浪费读取预算。先 Grep 找到精确位置，再用 offset/limit 读取。
-- **NEVER** 在快速模式中启动 subagent 或绘制 Mermaid 图——用户问的是"这个函数干什么"，你花 3 轮 subagent 去扫描项目架构，这是对用户时间的不尊重。匹配模式，精准响应。
+- **NEVER** 在快速模式中启动 subagent 或绘制架构图——用户问的是"这个函数干什么"，你花 3 轮 subagent 去扫描项目架构，这是对用户时间的不尊重。匹配模式，精准响应。
 
 ---
 

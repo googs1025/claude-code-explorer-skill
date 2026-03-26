@@ -1,7 +1,7 @@
 {
   "name": "code-explorer",
   "version": "1.0.0",
-  "description": "深度阅读和理解源代码的 Claude Code 插件。支持多语言专项策略、四阶段分析流程、Mermaid 可视化和 Git 洞察。",
+  "description": "深度阅读和理解源代码的 Claude Code 插件。支持多语言专项策略、四阶段分析流程、ASCII art 可视化和 Git 洞察。",
   "author": "googs1025",
   "keywords": ["code-reading", "source-analysis", "architecture", "code-explorer"],
   "skills": ["skills/code-explorer"],
