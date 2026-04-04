@@ -1,6 +1,6 @@
-# code-explorer — Claude Code 源码解读 Plugin
+# code-explorer — Claude Code / Codex 源码解读 Skill
 
-一个为 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 设计的源码探索插件，帮助你快速读懂陌生代码库。
+一个同时支持 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 和 Codex 的源码探索 Skill，帮助你快速读懂陌生代码库。
 
 ## 功能特点
 
@@ -9,11 +9,12 @@
 - **参考脚本自动化**：自动检测语言、查找入口点、获取 Git 历史上下文
 - **ASCII art 可视化**：自动生成架构图、时序图、状态机图
 - **Git 洞察**：结合提交历史解释代码演变背景
-- **Claude Code Hooks**：智能交互增强，运行时追踪与保护
+- **双端支持**：Claude Code Plugin / Legacy 安装 + Codex skill 安装
+- **Claude Code Hooks**：Claude 侧提供智能交互增强，运行时追踪与保护
 
 ## 安装
 
-### 方式一：Plugin 安装（推荐）
+### 方式一：Claude Code Plugin 安装（推荐）
 
 ```bash
 claude plugin add github:googs1025/claude-code-explorer-skill
@@ -21,37 +22,70 @@ claude plugin add github:googs1025/claude-code-explorer-skill
 
 Plugin 方式支持自动更新和版本管理，一行命令即可完成安装。
 
-### 方式二：Legacy 脚本安装
+### 方式二：Codex Skill 安装
+
+```bash
+git clone https://github.com/googs1025/claude-code-explorer-skill.git
+cd claude-code-explorer-skill
+bash install.sh --codex
+```
+
+也可以手动复制：
+
+```bash
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+cp -R codex-skills/code-explorer "${CODEX_HOME:-$HOME/.codex}/skills/"
+```
+
+Codex 安装只包含 Skill 本体、语言策略、参考脚本和 `agents/openai.yaml` 元数据；**不包含 Claude Hooks**。
+
+### 方式三：Claude Code Legacy 脚本安装
 
 适用于不支持 Plugin 的旧版本 Claude Code：
 
 ```bash
 git clone https://github.com/googs1025/claude-code-explorer-skill.git
 cd claude-code-explorer-skill
-bash install.sh
+bash install.sh --claude
 ```
 
-安装脚本会自动完成以下步骤：
+兼容旧行为时，直接执行 `bash install.sh` 也会只安装 Claude Legacy 版本。
+
+### 一次安装两端
+
+```bash
+bash install.sh --all
+```
+
+安装脚本会按目标自动完成以下步骤：
 1. 将 Skill 文件复制到 `~/.claude/skills/code-explorer/`
-2. 安装 Git Hooks（仅当前仓库开发用）
-3. 安装 Claude Code Hooks 到 `~/.claude/hooks/code-explorer/`
-4. 注册 Hooks 到 `~/.claude/settings.json`
+2. 将 Codex Skill 文件复制到 `${CODEX_HOME:-~/.codex}/skills/code-explorer/`
+3. 安装 Git Hooks（仅 Claude Legacy / 当前仓库开发用）
+4. 安装 Claude Code Hooks 到 `~/.claude/hooks/code-explorer/`
+5. 注册 Hooks 到 `~/.claude/settings.json`
 
 ### 本地开发测试
 
 ```bash
 # 以 Plugin 方式加载本地目录
 claude --plugin-dir ./
+
+# 安装到本地 Codex skills 目录
+bash install.sh --codex
 ```
 
 ## 使用方式
 
-安装后，在 Claude Code 中用以下任意方式触发：
+安装后，可以在 Claude Code 或 Codex 中用以下方式触发：
 
 ```bash
-# 显式调用
+# Claude 显式调用
 /code-explorer src/main.go
 /code-explorer handleRequest
+
+# Codex 显式调用
+$code-explorer 帮我解释 src/main.go 的核心流程
+$code-explorer 梳理 handleRequest 的调用链
 
 # 自然语言触发（自动识别）
 帮我理解 handleRequest 的执行流程
@@ -164,7 +198,7 @@ Skill 内置三个辅助脚本，分析时自动执行：
 
 ## Claude Code Hooks
 
-插件自动配置以下 [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)，增强分析体验：
+Claude 侧自动配置以下 [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)，增强分析体验：
 
 | Hook | 触发时机 | 功能 |
 |------|---------|------|
@@ -200,6 +234,8 @@ on-stop.sh → 输出统计，清理临时文件
 
 > **注意**：`pre-prompt.sh` 内置超时保护（10 秒），TTY 不可用时自动使用默认配置，不会阻塞 Claude Code。
 
+> **Codex 说明**：Codex 版本不依赖 Hooks，保留的是 Skill 主体、语言策略、参考脚本和 `agents/openai.yaml` UI 元数据。
+
 ## Git Hooks（开发者用）
 
 项目还包含用于开发本 Skill 时的 Git Hooks：
@@ -218,9 +254,19 @@ claude-code-explorer-skill/
 ├── .claude-plugin/
 │   ├── plugin.json                 # 插件清单（名称、版本、描述）
 │   └── marketplace.json            # 市场目录（仓库地址）
+├── codex-skills/
+│   └── code-explorer/
+│       ├── SKILL.md                # Codex 专用 Skill 入口
+│       ├── agents/
+│       │   └── openai.yaml         # Codex UI 元数据
+│       ├── lang/                   # 语言专项分析策略
+│       ├── scripts/                # 辅助分析脚本
+│       ├── context-mgmt.md
+│       ├── error-handling.md
+│       └── suggestion-mode.md
 ├── skills/
 │   └── code-explorer/
-│       ├── SKILL.md                # Skill 主文件（分析流程与策略）
+│       ├── SKILL.md                # Claude Code Skill 主文件
 │       ├── lang/                   # 语言专项分析策略
 │       │   ├── go.md
 │       │   ├── python.md
@@ -236,8 +282,8 @@ claude-code-explorer-skill/
 │   ├── post-bash.sh                # 脚本输出验证与会话标记
 │   ├── post-read.sh                # 文件读取追踪
 │   └── on-stop.sh                  # 会话统计与清理
-├── install.sh                      # Legacy 安装脚本
-├── uninstall.sh                    # Legacy 卸载脚本
+├── install.sh                      # Claude / Codex 安装脚本
+├── uninstall.sh                    # Claude / Codex 卸载脚本
 ├── README.md                       # 项目说明
 ├── CHANGELOG.md                    # 变更日志
 └── git-hooks/                      # Git Hooks（开发用）

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0] - 2026-04-04
+
+### Added
+
+- 新增 `codex-skills/code-explorer/`，提供 Codex 专用 Skill 目录
+- 新增 `codex-skills/code-explorer/agents/openai.yaml`，补充 Codex UI 元数据
+
+### Changed
+
+- `install.sh` 新增 `--claude`、`--codex`、`--all` 参数，支持双端安装
+- `uninstall.sh` 新增 `--claude`、`--codex`、`--all` 参数，支持双端卸载
+- `README.md` 更新为同时覆盖 Claude Code 与 Codex 的安装和使用方式
+
 ## [1.0.0] - 2026-03-16
 
 ### Changed

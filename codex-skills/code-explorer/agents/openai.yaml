@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Explorer"
+  short_description: "读懂陌生代码与项目架构"
+  default_prompt: "使用 $code-explorer 帮我梳理这个仓库的架构、关键调用链和设计意图。"
