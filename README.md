@@ -74,6 +74,31 @@ claude --plugin-dir ./
 bash install.sh --codex
 ```
 
+## 安装验证
+
+安装完成后，可以运行验证脚本确认 Hooks 的触发检测逻辑是否正常工作：
+
+```bash
+# 运行完整模拟对话（测试 22 条样本）
+bash verify-trigger.sh
+
+# 测试单条自定义 prompt
+bash verify-trigger.sh "帮我解释这个函数"
+bash verify-trigger.sh "帮我写一个排序函数"
+```
+
+输出示例：
+
+```
+  User › 帮我梳理这个项目的架构
+  Claude › [code-explorer 已触发]  ← 深度关键词
+
+  User › 帮我写一个排序函数
+  Claude › [跳过，普通回复]
+```
+
+> **说明**：此脚本仅适用于 Claude Code 版本。Codex 版本无 Hooks 机制，触发由模型根据 Skill 描述自主判断，不可脚本化验证。
+
 ## 使用方式
 
 安装后，可以在 Claude Code 或 Codex 中用以下方式触发：
@@ -284,6 +309,7 @@ claude-code-explorer-skill/
 │   └── on-stop.sh                  # 会话统计与清理
 ├── install.sh                      # Claude / Codex 安装脚本
 ├── uninstall.sh                    # Claude / Codex 卸载脚本
+├── verify-trigger.sh               # 验证 Hooks 触发检测逻辑（Claude Code 专用）
 ├── README.md                       # 项目说明
 ├── CHANGELOG.md                    # 变更日志
 └── git-hooks/                      # Git Hooks（开发用）
